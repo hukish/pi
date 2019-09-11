@@ -6,7 +6,7 @@ from  flask_migrate import Migrate, MigrateCommand
 from flask_wtf.csrf import CSRFProtect # add csrf protection without creating a FlaskForm
 from app import config
 
-import config
+import app.config
 import os
 
 # Creating app instance

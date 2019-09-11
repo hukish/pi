@@ -1,7 +1,7 @@
 import os
 
 class Config:
-    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://hudson:12345@localhost/PITCHES'
+    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://hudson:1234@localhost/pitches'
     UPLOADED_PHOTOS_DEST ='app/static/photos'
 
 
