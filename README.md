@@ -55,4 +55,7 @@ As a user I would like to:
 
         $ chmod +x start.sh
         $ ./start.sh
-        
+
+## Technologies Used
+        * Python3.6
+        * Flask
