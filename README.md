@@ -31,3 +31,28 @@ As a user I would like to:
 * python3.6
 * pip
 * virtualenv
+
+## Running the Application
+* Creating the virtual environment
+
+        $ python3.6 -m venv --without-pip virtual
+        $ source virtual/bin/env
+        $ curl https://bootstrap.pypa.io/get-pip.py | python
+
+* Installing Flask and other Modules
+
+        $ python3.6 -m pip install Flask
+        $ python3.6 -m pip install Flask-Bootstrap
+        $ python3.6 -m pip install Flask-Font-Mail
+        $ python3.6 -m pip install Flask-upload
+        $ python3.6 -m pip install Flask-login
+        $ python3.6 -m pip install Flask-Alchemy
+        $ python3.6 -m pip install Flask-Simplemde
+
+
+
+* To run the application, in your terminal:
+
+        $ chmod +x start.sh
+        $ ./start.sh
+        
