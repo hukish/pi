@@ -1,30 +1,23 @@
-from .import db
+from . import db, login_manager
 from werkzeug.security import generate_password_hash,check_password_hash
 from flask_login import UserMixin
-from . import login_manager
-from datetime import datetime
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-class User(UserMixin,db.Model):
+#User class
+class User(UserMixin, db.Model):
     __tablename__ = 'users'
-
-    id = db.Column(db.Integer,primary_key = True)
-    username = db.Column(db.String(255),index = True)
-    email = db.Column(db.String(255),unique = True,index = True)
-    role_id = db.Column(db.Integer,db.ForeignKey('roles.id'))
-    bio = db.Column(db.String(255))
-    profile_pic_path = db.Column(db.String())
-    password_hash = db.Column(db.String(255))
-    reviews = db.relationship('Review',backref = 'user',lazy = "dynamic")
+    id = db.Column(db.Integer, primary_key = True)
+    username = db.Column(db.String(255))
+    email = db.Column(db.String(255))
     pass_secure = db.Column(db.String(255))
-
-
-    def __repr__(self):
-        return f'User {self.username}'
-
+    pitches = db.relationship('Pitch', backref = 'user', lazy = "dynamic")
+    comments = db.relationship('Comment', backref = 'user', lazy = "dynamic")
+    bio = db.Column(db.String(255))
+    profile_pic_path = db.Column(db.String(100))
+    photoprofiles = db.relationship('PhotoProfile', backref = 'user', lazy = 'dynamic')
 
     @property
     def password(self):
@@ -34,38 +27,94 @@ class User(UserMixin,db.Model):
     def password(self, password):
         self.pass_secure = generate_password_hash(password)
 
-
-    def verify_password(self,password):
-        return check_password_hash(self.pass_secure,password)
-
-class Role(db.Model):
-    __tablename__ = 'roles'
-
-    id = db.Column(db.Integer,primary_key = True)
-    name = db.Column(db.String(255))
-    users = db.relationship('User',backref = 'role',lazy="dynamic")
+    def verify_password(self, password):
+        return check_password_hash(self.pass_secure, password)
 
     def __repr__(self):
-        return f'User {self.name}'
+        return f'User {self.username}'
 
-class Review(db.Model):
 
-    __tablename__ = 'reviews'
+class Pitch(db.Model):
+    __tablename__ = 'pitch'
+    id = db.Column(db.Integer, primary_key = True)
+    title = db.Column(db.String(255))
+    content = db.Column(db.String)
+    category = db.Column(db.Integer, db.ForeignKey('categories.id'))
+    vote = db.Column(db.Integer)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    comments = db.relationship('Comment', backref = 'pitch', lazy = "dynamic")
+    votes = db.relationship('Vote', backref = 'pitch', lazy = "dynamic")
 
-    id = db.Column(db.Integer,primary_key = True)
-    movie_id = db.Column(db.Integer)
-    movie_title = db.Column(db.String)
-    image_path = db.Column(db.String)
-    movie_review = db.Column(db.String)
-    posted = db.Column(db.DateTime,default=datetime.utcnow)
-    user_id = db.Column(db.Integer,db.ForeignKey("users.id"))
-
-    def save_review(self):
+    def save_pitch(self):
         db.session.add(self)
         db.session.commit()
 
     @classmethod
-    def get_reviews(cls,id):
-        reviews = Review.query.filter_by(movie_id=id).all()
-        return reviews
+    def clear_pitches(cls):
+        Pitch.all_pitch.clear()
 
+    # display pitches
+
+    def get_pitch(id):
+        pitch = Pitch.query.filter_by(category_id=id).all()
+        return pitches
+
+
+
+class Category(db.Model):
+    __tablename__ = 'categories'
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String)
+
+    def save_category(self):
+        db.session.add(self)
+        db.session.commit()
+
+    @classmethod
+    def get_categories(cls):
+        categories = Category.query.all()
+        return categories
+
+class Comment(db.Model):
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key = True)
+    feedback = db.Column(db.String)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    pitch_id = db.Column(db.Integer, db.ForeignKey('pitch.id'))
+    votes = db.relationship('Vote', backref = 'comments', lazy = "dynamic")
+
+    def save_comment(self):
+        '''
+        Function that saves comments
+        '''
+        db.session.add(self)
+        db.session.commit()
+
+    @classmethod
+    def get_comments(self, id):
+        comment = Comments.query.order_by(Comments.time_posted.desc()).filter_by(pitch_id=id).all()
+        return comment
+
+
+class Vote(db.Model):
+    __tablename__ = 'votes'
+    id = db.Column(db.Integer, primary_key = True)
+    vote = db.Column(db.Integer)
+    pitch_id = db.Column(db.Integer, db.ForeignKey('pitch.id'))
+    comment_id = db.Column(db.Integer, db.ForeignKey('comments.id'))
+
+    def save_vote(self):
+        db.session.add(self)
+        db.session.commit()
+
+    @classmethod
+    def get_votes(cls,user_id,pitches_id):
+        votes = Vote.query.filter_by(user_id=user_id, pitch_id=pitches_id).all()
+        return votes
+
+
+class PhotoProfile(db.Model):
+    __tablename__ = 'photoprofiles'
+    id = db.Column(db.Integer, primary_key = True)
+    pic_path = db.Column(db.String())
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))

@@ -1,0 +1,47 @@
+{% extends 'base.html'%}
+{% import 'macros.html' as macro%}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+
+{% block styles%}
+    {{ super() }} <!--super() function tells Jinja not to override any code that is defined in the block-->
+    <link href="{{ url_for('static', filename='libraries/css/index.css') }}" rel="stylesheet" type="text/css" >
+      <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/index.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="bgn">
+  <br>
+      <div class="container-fluid" style="font-family;Russo One,sans-serif">
+
+      <div class="row">
+
+          <div class="container" id="block-text">
+          <br>
+          <div class=" jumbotron">
+              <h1>PITCHING SITE</h1>
+
+          </div>
+
+
+          <br>
+
+      </div>
+  </div>
+
+  <hr>
+
+  <div class="container">
+      <br>
+      <h2> <strong>ADD YOUR CATEGORIES </strong></h2>
+      <strong style="font-size: 20px;">{{ macro.displayCategoryList(category) }} </strong>
+      <br>
+      <br>
+
+
+      <h3 class="add-category"><a class="btn btn-primary" href="/add/category" style="background-color:#002457; float:right;"><span aria-hidden="true"> ADD CATEGORY </span></a></h3>
+  </div>
+
+A
+</div>
+{% endblock  %}
